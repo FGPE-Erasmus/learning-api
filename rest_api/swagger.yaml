@@ -1,0 +1,499 @@
+swagger: "2.0"
+info:
+  description: This is the swagger file that goes with our server code
+  version: "1.0.0"
+  title: Swagger REST Article
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+basePath: "/api"
+
+# Paths supported by the server application
+paths:
+  /auth/login/:
+    post:
+      operationId: "rest_api.auth.login"
+      description: User login
+      parameters:
+      - in: body
+        name: user
+        description: Login data
+        schema:
+          type: object
+          required:
+          - username
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+      responses:
+        200:
+          description: "Ok"
+
+  /auth/register/:
+    post:
+      operationId: "rest_api.auth.register"
+      description: Register user
+      parameters:
+      - in: body
+        name: user
+        description: Login data
+        schema:
+          type: object
+          required:
+          - first_name
+          - username
+          - password
+          - last_name
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+            first_name:
+              type: string
+            last_name:
+              type: string
+      responses:
+        201:
+          description: "Created"
+
+  /auth/token/refresh/:
+    post:
+      operationId: "rest_api.auth.refresh_token"
+      description: Refresh token
+      parameters:
+      - in: body
+        name: refreshToken
+        schema:
+          type: object
+          required:
+          - refreshToken
+          properties:
+            refreshToken:
+              type: string
+      responses:
+        200:
+          description: "OK"
+
+  /auth/logout/:
+    delete:
+      operationId: "rest_api.auth.logout"
+      description: Logout
+      responses:
+        200:
+          description: "Ok"
+
+  /auth/confirmation/{token}:
+    post:
+      operationId: "rest_api.auth.confirm_email"
+      description: "Email confirmation"
+      parameters:
+      - name: "token"
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: "Ok"
+
+  /oauth/callback/microsoft/:
+    get:
+      operationId: "rest_api.oauth.microsoft_callback"
+      description: "Oatuh callack"
+      responses:
+        200:
+          description: "Ok"
+
+  /oauth/login/microsoft/:
+    get:
+      operationId: "rest_api.oauth.microsoft_login"
+      description: "Oauth microsoft login"
+      responses:
+        200:
+          description: "Ok"
+
+  /course/{platformCourseId}/:
+    get:
+      operationId: "rest_api.views.user_course"
+      description: "User course details"
+      parameters:
+      - name: "platformCourseId"
+        in: "path"
+        type: "string"
+        required: True
+      responses:
+        200:
+          description: "OK"
+        201:
+          description: "Created"
+        404:
+          description: "Not found"
+    put:
+      operationId: "rest_api.views.set_user_course_position"
+      description: "Update course - set possition"
+      parameters:
+      - name: "platformCourseId"
+        in: "path"
+        type: "string"
+        required: True
+      - in: body
+        name: exercise
+        description: Platform course exercise id to set course posi.
+        schema:
+          type: object
+          required:
+            - platformCourseExerciseId
+          properties:
+            platformCourseExerciseId:
+              type: "string"
+      responses:
+        200:
+          description: "OK"
+        404:
+          description: "Not found"
+  
+  /courses/:
+    get:
+      operationId: "rest_api.views.user_courses"
+      description: "User courses list"
+      responses:
+        200:
+          description: "OK"
+        404:
+          description: "Not found"
+
+  /user/:
+    get:
+      operationId: "rest_api.views.get_user"
+      description: "Get user"
+      responses:
+        200:
+          description: "OK"
+        404:
+          description: "Not found"
+    put:
+      operationId: "rest_api.views.update_user"
+      description: "Update user settings"
+      parameters:
+      - in: body
+        name: user_settings
+        description: User settings.
+        schema:
+          type: object
+          properties:
+            interfaceLang:
+              type: string
+            uiColor:
+              type: string
+      responses:
+        200:
+          description: "Ok"
+        404:
+          description: "Not found"
+
+  /exercise/{platformCourseId}/{platformCourseExerciseId}/:
+    get:
+      operationId: "rest_api.views.user_course_exercise"
+      description: "User start this exercise"
+      parameters:
+      - name: "platformCourseExerciseId"
+        in: "path"
+        type: "string"
+        required: True
+      - name: "platformCourseId"
+        in: "path"
+        type: "string"
+        required: True
+      responses:
+        201:
+          description: "Created"
+        404:
+          description: "Not found"
+
+  /exercise/{platformCourseExerciseId}/:
+    put:
+      operationId: "rest_api.views.send_answer"
+      description: "Send answer"
+      parameters:
+      - name: "platformCourseExerciseId"
+        in: "path"
+        type: "string"
+        required: True
+      - in: body
+        name: answer
+        description: Answer.
+        schema:
+          type: object
+          required:
+            - answer
+          properties:
+            answer:
+              type: string
+      responses:
+        200:
+          description: "Ok"
+        404:
+          description: "Not found"
+
+  /exercises/:
+    get:
+      operationId: "rest_api.views.user_course_exercises"
+      description: "Get user exercises"
+      responses:
+        200:
+          description: "Ok"
+        404:
+          description: "Not found"
+
+  /exercise-time/{platformCourseExerciseId}/:
+    put:
+      operationId: "rest_api.views.update_time"
+      description: "Update time on exercise"
+      parameters:
+      - name: "platformCourseExerciseId"
+        in: "path"
+        type: "string"
+        required: True
+      - in: body
+        name: time
+        description: Time to add.
+        schema:
+          type: object
+          required:
+            - time
+          properties:
+            time:
+              type: integer
+      responses:
+        200:
+          description: "Ok"
+        404:
+          description: "Not found"
+
+  /exercise-code/{exerciseId}/:
+    put:
+      operationId: "rest_api.views.save_code"
+      description: "Save code"
+      parameters:
+      - name: exerciseId
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: "Ok"
+        404:
+          description: "Not found"
+
+  /note/{exerciseId}/:
+    post:
+      operationId: "rest_api.views.add_note"
+      description: "Add note"
+      parameters:
+      - name: "exerciseId"
+        in: path
+        type: string
+        required: True
+      responses:
+        201:
+          description: "Created"
+        404:
+          description: "Not found"
+
+  /project/set/{projectId}:
+    post:
+      operationId: "rest_api.views.set_project"
+      description: Project
+      parameters:
+      - name: "projectId"
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: "Ok"
+        404:
+          description: "Not found"
+
+  /projects/:
+    get:
+      operationId: "rest_api.views.projects"
+      description: "Projects"
+      responses:
+        200:
+          description: "Ok"
+
+  /project/{projectId}:
+    get:
+      operationId: "rest_api.views.project"
+      description: Project
+      parameters:
+      - name: "projectId"
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: "Ok"
+        404:
+          description: "Not found"
+
+  /exercise-details/{id}:
+    get:
+      operationId: "rest_api.views.exercise"
+      description: "Exercise"
+      parameters:
+      - name: "id"
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: "Ok"
+
+  /exercises/{projectId}:
+    get:
+      operationId: "rest_api.views.exercises"
+      description: "Exercises"
+      parameters:
+      - name: "projectId"
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: "Ok"
+
+  /challenges/{id}:
+    get:
+      operationId: "rest_api.views.chalanges"
+      description: Chalanges
+      parameters:
+      - name: id
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: Ok
+
+  /dynamic-correctors/{pathname}:
+    get:
+      operationId: "rest_api.views.dynamic_correctors"
+      description: Dynamic correctors
+      parameters:
+      - name: pathname
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: Ok
+
+  /static-correctors/{pathname}:
+    get:
+      operationId: "rest_api.views.static_correctors"
+      description: Static correctors
+      parameters:
+      - name: pathname
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: Ok
+
+  /statements/{pathname}:
+    get:
+      operationId: "rest_api.views.statements"
+      description: Statements
+      parameters:
+      - name: pathname
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: Ok
+
+  /skeletons/{pathname}:
+    get:
+      operationId: "rest_api.views.skeletons"
+      description: Skeletons
+      parameters:
+      - name: pathname
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: Ok
+
+  /templates/{pathname}:
+    get:
+      operationId: "rest_api.views.templates"
+      description: Templates
+      parameters:
+      - name: pathname
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: Ok
+
+  /libraries/{pathname}:
+    get:
+      operationId: "rest_api.views.libraries"
+      description: Libraries
+      parameters:
+      - name: pathname
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: Ok
+
+  /solutions/{pathnameId}:
+    get:
+      operationId: "rest_api.views.solutions"
+      description: Solutions
+      parameters:
+      - name: pathnameId
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: Ok
+
+  /embeddables/{pathnameId}:
+    get:
+      operationId: "rest_api.views.embeddables"
+      description: Embeddables
+      parameters:
+      - name: pathnameId
+        in: path
+        type: string
+        required: True
+      responses:
+        200:
+          description: Ok
+
+  /gamification-layers/{projectId}:
+    get:
+      operationId: "rest_api.views.gamification_layers"
+      description: Gamification layers
+      parameters:
+      - in: path
+        name: projectId
+        type: string
+        required: True
+      responses:
+        200:
+          description: Ok

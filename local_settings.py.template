@@ -1,0 +1,64 @@
+APP_HOST = 'http://127.0.0.1:9000'
+UI_HOST = 'http://127.0.0.1:8080'
+
+DATABASE = {
+    'name': 'learning_platform',
+    'user': 'postgres',
+    'password': 'qwe12345',
+    'host': 'localhost',
+}
+
+API = {
+    'confirm_url': f'{UI_HOST}/emailConfirmation/'
+}
+
+FGPE = {
+    'url': 'http://fgpe.dcc.fc.up.pt:80/api/',
+    'username': 'johny.bravo8468@onet.pl',
+    'password': 'Srnyy6n64u',
+    'ENDPOINT_LOGIN': 'auth/login',
+    'ENDPOINT_REFRESH_TOKEN': 'auth/refresh'
+}
+
+MAIL = {
+    'MAIL_SERVER': 'smtp.office365.com',
+    'MAIL_PORT': 587,
+    'MAIL_USE_TLS': False,
+    'MAIL_USE_SSL': False,
+    'MAIL_USERNAME': 'python@usz.edu.pl',
+    'MAIL_PASSWORD': ''
+}
+
+'''
+KEEP IN SECRET!
+CHANGE TO OTHER VALUES!
+'''
+SECRETS = {
+    'APP_SECRET': 'random_secret_key',
+    'JWT_SECRET_KEY': 'super-secret',
+    'TOKEN_SECRET_KEY': 'super-secret',
+    'TOKEN_SECURITY_PASSWORD_SALT': 'super-secret'
+}
+
+# OAUTH
+OAUTH = {
+    'MICROSOFT': {
+        'CLIENT_ID': '',
+        'CLIENT_SECRET': '',
+        'REDIRECT_URI': f'http://localhost:9000/api/oauth/callback/microsoft',
+
+        # AUTHORITY_URL ending determines type of account that can be authenticated:
+        # /organizations = organizational accounts only
+        # /consumers = MSAs only (Microsoft Accounts - Live.com, Hotmail.com, etc.)
+        # /common = allow both types of accounts
+        'AUTHORITY_URL': 'https://login.microsoftonline.com/common',
+
+        'AUTH_ENDPOINT': '/oauth2/v2.0/authorize',
+        'TOKEN_ENDPOINT': '/oauth2/v2.0/token',
+        'RESOURCE': 'https://graph.microsoft.com/',
+        'API_VERSION': 'v1.0',
+        'SCOPES': ['User.Read'] # Add other scopes/permissions as needed.
+    }
+}
+
+EXERCISES_MAX_AMOUNT = 200
