@@ -1,15 +1,8 @@
+from app import ma
 from marshmallow import fields as marshmallow_fields
 from marshmallow.validate import Length
-
-from app import ma
-
-from psql.tables import (
-    Badge,
-    ExerciseNote,
-    User,
-    UserCourse,
-    UserCourseExercise
-)
+from psql.tables import (Badge, ExerciseNote, User, UserCourse,
+                         UserCourseExercise)
 
 
 class BadgeSchema(ma.Schema):
@@ -45,8 +38,10 @@ class RegisterSchema(ma.Schema):
             'first_name',
             'last_name'
         ]
-    
-    username = marshmallow_fields.Email(required=True)
+
+    username = marshmallow_fields.Email(
+        required=True)
+
     password = marshmallow_fields.Str(
         validate=Length(min=8, max=64), required=True
     )
@@ -74,7 +69,8 @@ class UserSchema(ma.Schema):
             'microsoft_mail',
         ]
 
-    badges = ma.Nested(BadgeSchema(many=True))
+    badges = ma.Nested(
+        BadgeSchema(many=True))
 
 
 class UserCourseExerciseSchema(ma.Schema):
@@ -96,7 +92,8 @@ class UserCourseExerciseSchema(ma.Schema):
             'exercise_description',
         ]
 
-    notes = ma.Nested(ExerciseNoteSchema(many=True))
+    notes = ma.Nested(
+        ExerciseNoteSchema(many=True))
 
 
 class UserCourseExerciseBasicSchema(ma.Schema):
@@ -118,5 +115,8 @@ class UserCourseSchema(ma.Schema):
             'exercises'
         ]
 
-    position = ma.Nested(UserCourseExerciseSchema())
-    exercises = ma.Nested(UserCourseExerciseBasicSchema(many=True))
+    position = ma.Nested(
+        UserCourseExerciseSchema())
+
+    exercises = ma.Nested(
+        UserCourseExerciseBasicSchema(many=True))

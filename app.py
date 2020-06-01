@@ -1,11 +1,10 @@
 import connexion
 import peewee as pw
 from flask_cors import CORS
-from flask_marshmallow import Marshmallow
 from flask_jwt_extended import JWTManager
-
-from local_settings import DATABASE as LOCAL_SETTINGS_DATABASE, MAIL, SECRETS
-
+from flask_marshmallow import Marshmallow
+from local_settings import DATABASE as LOCAL_SETTINGS_DATABASE
+from local_settings import SECRETS
 
 jwt = JWTManager()
 ma = Marshmallow()
@@ -19,15 +18,15 @@ db = pw.PostgresqlDatabase(
 
 
 def create_app():
-    connex_app = connexion.FlaskApp(__name__, specification_dir='rest_api/')
+    connex_app = connexion.FlaskApp(__name__, specification_dir='api/')
     connex_app.add_api('swagger.yaml')
 
     app = connex_app.app
 
-    # TODO
     app.config['JWT_SECRET_KEY'] = SECRETS['JWT_SECRET_KEY']
     app.config['TOKEN_SECRET_KEY'] = SECRETS['TOKEN_SECRET_KEY']
-    app.config['TOKEN_SECURITY_PASSWORD_SALT'] = SECRETS['TOKEN_SECURITY_PASSWORD_SALT']
+    app.config['TOKEN_SECURITY_PASSWORD_SALT'] = SECRETS[
+        'TOKEN_SECURITY_PASSWORD_SALT']
 
     CORS(app, resources={r'*': {'origins': '*'}})
 

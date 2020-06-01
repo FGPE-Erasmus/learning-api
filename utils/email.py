@@ -1,10 +1,10 @@
 import smtplib
-from flask_mail import Message
 
+from flask_mail import Message
 from settings import MAIL
 
 
-class Mail():
+class Mail:
     def __init__(self):
         self.server = smtplib.SMTP(MAIL['MAIL_SERVER'], MAIL['MAIL_PORT'])
         self.server.connect(MAIL['MAIL_SERVER'], MAIL['MAIL_PORT'])

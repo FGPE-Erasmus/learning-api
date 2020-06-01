@@ -1,22 +1,14 @@
-import os
 import urllib.parse
-import uuid
 from datetime import timedelta
 from http import HTTPStatus
 
-import adal
-import flask
-from flask_jwt_extended import (
-    create_access_token,
-    create_refresh_token,
-)
 import requests
 
-from playhouse.flask_utils import get_object_or_404
-
+import adal
+import flask
+from flask_jwt_extended import create_access_token, create_refresh_token
 from psql.tables import User
 from settings import OAUTH
-
 
 MS_OAUTH = OAUTH['MICROSOFT']
 
@@ -33,16 +25,19 @@ def microsoft_login():
 
 
 def microsoft_callback():
-    """Handler for the application's Redirect Uri."""
+    ''' Handler for the application's Redirect Uri
+    '''
 
     code = flask.request.args['code']
-    auth_context = adal.AuthenticationContext(MS_OAUTH['AUTHORITY_URL'], api_version=None)
+    auth_context = adal.AuthenticationContext(
+        MS_OAUTH['AUTHORITY_URL'], api_version=None)
     try:
         token_response = auth_context.acquire_token_with_authorization_code(
-            code, MS_OAUTH['REDIRECT_URI'], MS_OAUTH['RESOURCE'], MS_OAUTH['CLIENT_ID'], MS_OAUTH['CLIENT_SECRET'])
-    except:
+            code, MS_OAUTH['REDIRECT_URI'], MS_OAUTH['RESOURCE'],
+            MS_OAUTH['CLIENT_ID'], MS_OAUTH['CLIENT_SECRET'])
+    except Exception:  # FIXME
         return {}, HTTPStatus.BAD_REQUEST
-    
+
     headers = {
         'Authorization': f"Bearer {token_response['accessToken']}",
         'User-Agent': 'adal-sample',
@@ -53,7 +48,8 @@ def microsoft_callback():
     }
 
     endpoint = MS_OAUTH['RESOURCE'] + MS_OAUTH['API_VERSION'] + '/me'
-    ms_user_data = requests.Session().get(endpoint, headers=headers, stream=False).json()
+    ms_user_data = requests.Session().get(
+        endpoint, headers=headers, stream=False).json()
 
     user = User.get_or_none(User.microsoft_id == ms_user_data['id'])
 
@@ -67,15 +63,12 @@ def microsoft_callback():
         )
 
     token = create_access_token(
-        identity=user.username, expires_delta=timedelta(minutes=120)
-    )
+        identity=user.username, expires_delta=timedelta(minutes=120))
+
     ref_token = create_refresh_token(
-        identity=user.username, expires_delta=timedelta(weeks=1)
-    )
+        identity=user.username, expires_delta=timedelta(weeks=1))
 
-    response = {
-        "accessToken": token,
-        "refreshToken": ref_token
-    }
-
-    return response, HTTPStatus.OK
+    return {
+        'accessToken': token,
+        'refreshToken': ref_token
+    }, HTTPStatus.OK

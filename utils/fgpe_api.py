@@ -1,10 +1,11 @@
 import datetime
+
 import requests
 
 from settings import FGPE
 
 
-class FGPEApi():
+class FGPEApi:
     base_url = FGPE['url']
     token = ''
     refresh_token = ''
@@ -30,14 +31,15 @@ class FGPEApi():
         return response
 
     def get_headers(self):
-        headers = {
+        return {
             'Authorization': f'Bearer {self.token}',
         }
 
-        return headers
-
     def token_refresh(self):
-        response = requests.post(f'{self.base_url}{FGPE["ENDPOINT_REFRESH_TOKEN"]}', data={'refreshToken': self.refresh_token})
+        response = requests.post(
+            f'{self.base_url}{FGPE["ENDPOINT_REFRESH_TOKEN"]}',
+            data={'refreshToken': self.refresh_token})
+
         if response.status_code == 200:
             self.token = response.json().get('accessToken')
 
@@ -49,12 +51,16 @@ class FGPEApi():
             'password': self.passwd
         }
 
-        response = requests.post(f'{self.base_url}{FGPE["ENDPOINT_LOGIN"]}', data=login_data)
+        response = requests.post(
+            f'{self.base_url}{FGPE["ENDPOINT_LOGIN"]}',
+            data=login_data)
+
         self.token = response.json().get('accessToken')
         self.refresh_token = response.json().get('refreshToken')
 
         refresh_token_expires_in = response.json().get('refreshTokenExpiresIn')
-        self.refresh_token_expires_datetime = datetime.datetime.now() + datetime.timedelta(seconds=refresh_token_expires_in - 1)
+        self.refresh_token_expires_datetime = datetime.datetime.now() + \
+            datetime.timedelta(seconds=refresh_token_expires_in - 1)
 
         return response
 

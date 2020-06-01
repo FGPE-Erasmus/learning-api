@@ -14,7 +14,7 @@ basePath: "/api"
 paths:
   /auth/login/:
     post:
-      operationId: "rest_api.auth.login"
+      operationId: "api.auth.login"
       description: User login
       parameters:
       - in: body
@@ -35,7 +35,7 @@ paths:
 
   /auth/register/:
     post:
-      operationId: "rest_api.auth.register"
+      operationId: "api.auth.register"
       description: Register user
       parameters:
       - in: body
@@ -63,7 +63,7 @@ paths:
 
   /auth/token/refresh/:
     post:
-      operationId: "rest_api.auth.refresh_token"
+      operationId: "api.auth.refresh_token"
       description: Refresh token
       parameters:
       - in: body
@@ -81,7 +81,7 @@ paths:
 
   /auth/logout/:
     delete:
-      operationId: "rest_api.auth.logout"
+      operationId: "api.auth.logout"
       description: Logout
       responses:
         200:
@@ -89,7 +89,7 @@ paths:
 
   /auth/confirmation/{token}:
     post:
-      operationId: "rest_api.auth.confirm_email"
+      operationId: "api.auth.confirm_email"
       description: "Email confirmation"
       parameters:
       - name: "token"
@@ -102,7 +102,7 @@ paths:
 
   /oauth/callback/microsoft/:
     get:
-      operationId: "rest_api.oauth.microsoft_callback"
+      operationId: "api.oauth.microsoft_callback"
       description: "Oatuh callack"
       responses:
         200:
@@ -110,7 +110,7 @@ paths:
 
   /oauth/login/microsoft/:
     get:
-      operationId: "rest_api.oauth.microsoft_login"
+      operationId: "api.oauth.microsoft_login"
       description: "Oauth microsoft login"
       responses:
         200:
@@ -118,7 +118,7 @@ paths:
 
   /course/{platformCourseId}/:
     get:
-      operationId: "rest_api.views.user_course"
+      operationId: "api.views.user_course"
       description: "User course details"
       parameters:
       - name: "platformCourseId"
@@ -133,7 +133,7 @@ paths:
         404:
           description: "Not found"
     put:
-      operationId: "rest_api.views.set_user_course_position"
+      operationId: "api.views.set_user_course_position"
       description: "Update course - set possition"
       parameters:
       - name: "platformCourseId"
@@ -158,7 +158,7 @@ paths:
   
   /courses/:
     get:
-      operationId: "rest_api.views.user_courses"
+      operationId: "api.views.user_courses"
       description: "User courses list"
       responses:
         200:
@@ -168,7 +168,7 @@ paths:
 
   /users/:
     get:
-      operationId: "rest_api.views.get_user_all"
+      operationId: "api.views.get_user_all"
       description: "Get user"
       responses:
         200:
@@ -178,7 +178,7 @@ paths:
 
   /userdetails/:
     post:
-      operationId: "rest_api.views.get_user_details"
+      operationId: "api.views.get_user_details"
       description: "Get user details"
       responses:
         200:
@@ -188,7 +188,7 @@ paths:
 
   /user/:
     get:
-      operationId: "rest_api.views.get_user"
+      operationId: "api.views.get_user"
       description: "Get user"
       responses:
         200:
@@ -196,7 +196,7 @@ paths:
         404:
           description: "Not found"
     put:
-      operationId: "rest_api.views.update_user"
+      operationId: "api.views.update_user"
       description: "Update user settings"
       parameters:
       - in: body
@@ -219,7 +219,7 @@ paths:
 
   /exercise/{platformCourseId}/{platformCourseExerciseId}/:
     get:
-      operationId: "rest_api.views.user_course_exercise"
+      operationId: "api.views.user_course_exercise"
       description: "User start this exercise"
       parameters:
       - name: "platformCourseExerciseId"
@@ -238,7 +238,7 @@ paths:
 
   /exercise/{platformCourseExerciseId}/:
     put:
-      operationId: "rest_api.views.send_answer"
+      operationId: "api.views.send_answer"
       description: "Send answer"
       parameters:
       - name: "platformCourseExerciseId"
@@ -263,7 +263,7 @@ paths:
 
   /exercises/:
     get:
-      operationId: "rest_api.views.user_course_exercises"
+      operationId: "api.views.user_course_exercises"
       description: "Get user exercises"
       responses:
         200:
@@ -273,7 +273,7 @@ paths:
 
   /exercise-time/{platformCourseExerciseId}/:
     put:
-      operationId: "rest_api.views.update_time"
+      operationId: "api.views.update_time"
       description: "Update time on exercise"
       parameters:
       - name: "platformCourseExerciseId"
@@ -298,7 +298,7 @@ paths:
 
   /exercise-code/{exerciseId}/:
     put:
-      operationId: "rest_api.views.save_code"
+      operationId: "api.views.save_code"
       description: "Save code"
       parameters:
       - name: exerciseId
@@ -313,7 +313,7 @@ paths:
 
   /note/{exerciseId}/:
     post:
-      operationId: "rest_api.views.add_note"
+      operationId: "api.views.add_note"
       description: "Add note"
       parameters:
       - name: "exerciseId"
@@ -328,7 +328,7 @@ paths:
 
   /project/set/{projectId}:
     post:
-      operationId: "rest_api.views.set_project"
+      operationId: "api.views.set_project"
       description: Project
       parameters:
       - name: "projectId"
@@ -343,7 +343,7 @@ paths:
 
   /projects/:
     get:
-      operationId: "rest_api.views.projects"
+      operationId: "api.views.projects"
       description: "Projects"
       responses:
         200:
@@ -351,7 +351,7 @@ paths:
 
   /project/{projectId}:
     get:
-      operationId: "rest_api.views.project"
+      operationId: "api.views.project"
       description: Project
       parameters:
       - name: "projectId"
@@ -366,7 +366,7 @@ paths:
 
   /exercise-details/{id}:
     get:
-      operationId: "rest_api.views.exercise"
+      operationId: "api.views.exercise"
       description: "Exercise"
       parameters:
       - name: "id"
@@ -379,7 +379,7 @@ paths:
 
   /exercises/{projectId}:
     get:
-      operationId: "rest_api.views.exercises"
+      operationId: "api.views.exercises"
       description: "Exercises"
       parameters:
       - name: "projectId"
@@ -392,7 +392,7 @@ paths:
 
   /challenges/{id}:
     get:
-      operationId: "rest_api.views.chalanges"
+      operationId: "api.views.chalanges"
       description: Chalanges
       parameters:
       - name: id
@@ -405,7 +405,7 @@ paths:
 
   /dynamic-correctors/{pathname}:
     get:
-      operationId: "rest_api.views.dynamic_correctors"
+      operationId: "api.views.dynamic_correctors"
       description: Dynamic correctors
       parameters:
       - name: pathname
@@ -418,7 +418,7 @@ paths:
 
   /static-correctors/{pathname}:
     get:
-      operationId: "rest_api.views.static_correctors"
+      operationId: "api.views.static_correctors"
       description: Static correctors
       parameters:
       - name: pathname
@@ -431,7 +431,7 @@ paths:
 
   /statements/{pathname}:
     get:
-      operationId: "rest_api.views.statements"
+      operationId: "api.views.statements"
       description: Statements
       parameters:
       - name: pathname
@@ -444,7 +444,7 @@ paths:
 
   /skeletons/{pathname}:
     get:
-      operationId: "rest_api.views.skeletons"
+      operationId: "api.views.skeletons"
       description: Skeletons
       parameters:
       - name: pathname
@@ -457,7 +457,7 @@ paths:
 
   /templates/{pathname}:
     get:
-      operationId: "rest_api.views.templates"
+      operationId: "api.views.templates"
       description: Templates
       parameters:
       - name: pathname
@@ -470,7 +470,7 @@ paths:
 
   /libraries/{pathname}:
     get:
-      operationId: "rest_api.views.libraries"
+      operationId: "api.views.libraries"
       description: Libraries
       parameters:
       - name: pathname
@@ -483,7 +483,7 @@ paths:
 
   /solutions/{pathnameId}:
     get:
-      operationId: "rest_api.views.solutions"
+      operationId: "api.views.solutions"
       description: Solutions
       parameters:
       - name: pathnameId
@@ -496,7 +496,7 @@ paths:
 
   /embeddables/{pathnameId}:
     get:
-      operationId: "rest_api.views.embeddables"
+      operationId: "api.views.embeddables"
       description: Embeddables
       parameters:
       - name: pathnameId
@@ -509,7 +509,7 @@ paths:
 
   /gamification-layers/{projectId}:
     get:
-      operationId: "rest_api.views.gamification_layers"
+      operationId: "api.views.gamification_layers"
       description: Gamification layers
       parameters:
       - in: path

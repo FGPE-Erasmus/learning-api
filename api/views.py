@@ -1,59 +1,55 @@
+import datetime
+from http import HTTPStatus
 
+from api.schema import (ExerciseNoteSchema, UserCourseExerciseSchema,
+                        UserCourseSchema, UserSchema)
 from flask import abort, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from http import HTTPStatus
-from playhouse.flask_utils import get_object_or_404
-from datetime import datetime, timedelta
-import datetime
-
-from psql.tables import (
-    User,
-    UserCourse,
-    UserCourseExercise,
-    ExerciseNote
-)
-from rest_api.schema import (
-    ExerciseNoteSchema,
-    UserSchema,
-    UserCourseSchema,
-    UserCourseExerciseSchema
-)
-from utils.fgpe_api import FGPEApi
 from local_settings import EXERCISES_MAX_AMOUNT
+from playhouse.flask_utils import get_object_or_404
+from psql.tables import ExerciseNote, User, UserCourse, UserCourseExercise
+from utils.fgpe_api import FGPEApi
 
 fgpe_api = FGPEApi()
+
 
 @jwt_required
 def get_user_all():
     role = User.get(User.username == get_jwt_identity()).is_admin
-    
+
     if role is True:
         users = User.select()
         user_schema = UserSchema(many=True)
+
         return user_schema.jsonify(users), HTTPStatus.OK
     else:
-        return {"msg": "Not allowed"}, 403
+        return {'msg': 'Not allowed'}, 403
 
 
 @jwt_required
 def get_user_details():
     role = User.get(User.username == get_jwt_identity()).is_admin
-    
+
     if role is True:
         json_data = request.get_json()
         user_name = json_data.get('userName')
         microsoft_mail = json_data.get('mirosoftMail')
 
-        if microsoft_mail is None:  
+        if microsoft_mail is None:
             user = get_object_or_404(User, (User.username == user_name))
         else:
-            user = get_object_or_404(User, (User.microsoft_mail == microsoft_mail))     
+            user = get_object_or_404(User, (
+                User.microsoft_mail == microsoft_mail))
 
-        exercieses = UserCourseExercise.select().join(User).where((User.id == user.id) & (UserCourseExercise.last_answer.is_null(False))).select()
-        exercieses_schema = UserCourseExerciseSchema(many=True)  
+        exercieses = UserCourseExercise.select().join(User).where((
+            User.id == user.id) & (UserCourseExercise.last_answer.is_null(
+                False))).select()
+
+        exercieses_schema = UserCourseExerciseSchema(many=True)
+
         return exercieses_schema.jsonify(exercieses), HTTPStatus.OK
     else:
-        return {"msg": "Not allowed"}, 403
+        return {'msg': 'Not allowed'}, 403
 
 
 @jwt_required
@@ -66,27 +62,27 @@ def get_user():
 @jwt_required
 def update_user():
     user = get_object_or_404(User, (User.username == get_jwt_identity()))
-    interface_lang = request.json.get('interfaceLang', None)
-    ui_color = request.json.get('uiColor', None)
-    first_name = request.json.get('first_name', None)
-    last_name = request.json.get('last_name', None)
-    number_of_attempts = request.json.get('number_of_attempts', None)
     solved_amount = request.json.get('solved_amount', None)
-    update_login = request.json.get('logginTime', None)
 
-    if interface_lang is not None:
-        user.interface_lang = interface_lang
-    if ui_color is not None:
-        user.ui_color = ui_color
-    if first_name is not None:
-        user.first_name = first_name
-    if last_name is not None:
-        user.last_name = last_name
-    if number_of_attempts is not None:
+    if request.json.get('interfaceLang', None):
+        user.interface_lang = request.json.get('interfaceLang', None)
+
+    if request.json.get('uiColor', None):
+        user.ui_color = request.json.get('uiColor', None)
+
+    if request.json.get('first_name', None):
+        user.first_name = request.json.get('first_name', None)
+
+    if request.json.get('last_name', None):
+        user.last_name = request.json.get('last_name', None)
+
+    if request.json.get('number_of_attempts', None):
         user.number_of_attempts += 1
-    if solved_amount is not None and solved_amount == True:
+
+    if solved_amount:
         user.solved_amount += 1
-    if update_login is not None:
+
+    if request.json.get('logginTime', None):
         user.last_login = datetime.datetime.now()
 
     user.save()
@@ -98,16 +94,21 @@ def update_user():
 def user_course(platformCourseId: int):
     user = get_object_or_404(User, (User.username == get_jwt_identity()))
 
-    user_course = UserCourse.get_or_create(user=user, platform_course_id=platformCourseId)
+    user_course = UserCourse.get_or_create(
+        user=user,
+        platform_course_id=platformCourseId)
 
-    return UserCourseSchema().jsonify(user_course[0]), HTTPStatus.CREATED if user_course[1] else HTTPStatus.OK
+    return UserCourseSchema().jsonify(
+        user_course[0]), HTTPStatus.CREATED if user_course[1] else HTTPStatus.OK  # NOQA
 
 
 @jwt_required
 def user_courses():
     user = get_object_or_404(User, (User.username == get_jwt_identity()))
 
-    courses = UserCourse.select().join(User).where(User.id == user.id).select()
+    courses = UserCourse.select().join(User).where(
+        User.id == user.id).select()
+
     courses_schema = UserCourseSchema(many=True)
 
     return courses_schema.jsonify(courses), HTTPStatus.OK
@@ -118,9 +119,16 @@ def set_user_course_position(platformCourseId: int):
     user = get_object_or_404(User, (User.username == get_jwt_identity()))
 
     position_id = request.json.get('platformCourseExerciseId', 0)
-    position = get_object_or_404(UserCourseExercise, (UserCourseExercise.platform_course_exercise_id == position_id), (UserCourseExercise.user == user))
 
-    course = UserCourse.select().join(User).where(User.id == user.id, UserCourse.platform_course_id == platformCourseId).get()
+    position = get_object_or_404(
+        UserCourseExercise, (
+            UserCourseExercise.platform_course_exercise_id == position_id), (
+            UserCourseExercise.user == user))
+
+    course = UserCourse.select().join(User).where(
+        User.id == user.id,
+        UserCourse.platform_course_id == platformCourseId).get()
+
     course.position = position
     course.save()
 
@@ -131,7 +139,9 @@ def set_user_course_position(platformCourseId: int):
 def user_course_exercises():
     user = get_object_or_404(User, (User.username == get_jwt_identity()))
 
-    exercieses = UserCourseExercise.select().join(User).where(User.id == user.id).select()
+    exercieses = UserCourseExercise.select().join(User).where(
+        User.id == user.id).select()
+
     exercieses_schema = UserCourseExerciseSchema(many=True)
 
     return exercieses_schema.jsonify(exercieses), HTTPStatus.OK
@@ -141,21 +151,32 @@ def user_course_exercises():
 def user_course_exercise(platformCourseExerciseId: int, platformCourseId: int):
     user = get_object_or_404(User, (User.username == get_jwt_identity()))
 
-    course = UserCourse.get_or_create(user=user, platform_course_id=platformCourseId)[0]
+    course = UserCourse.get_or_create(
+        user=user,
+        platform_course_id=platformCourseId)[0]
 
-    exercise = UserCourseExercise.get_or_create(course=course, user=user, platform_course_exercise_id=platformCourseExerciseId)
+    exercise = UserCourseExercise.get_or_create(
+        course=course,
+        user=user,
+        platform_course_exercise_id=platformCourseExerciseId)
+
     exercise_schema = UserCourseExerciseSchema()
 
-    return exercise_schema.jsonify(exercise[0]), HTTPStatus.CREATED if exercise[1] else HTTPStatus.OK
+    return exercise_schema.jsonify(
+        exercise[0]), HTTPStatus.CREATED if exercise[1] else HTTPStatus.OK
 
 
 @jwt_required
 def send_answer(platformCourseExerciseId: int):
     user = get_object_or_404(User, (User.username == get_jwt_identity()))
 
-    query = UserCourseExercise.select().join(User).where(User.id == user.id, UserCourseExercise.platform_course_exercise_id == platformCourseExerciseId)
+    query = UserCourseExercise.select().join(User).where(
+        User.id == user.id,
+        UserCourseExercise.platform_course_exercise_id == platformCourseExerciseId)  # NOQA
+
     if not query.exists():
         return {'error': 'Exercise not found'}, HTTPStatus.NOT_FOUND
+
     exercise = query.get()
 
     json_data = request.get_json()
@@ -167,8 +188,8 @@ def send_answer(platformCourseExerciseId: int):
     exercise.project_name = json_data.get('projectName')
     exercise.number_of_attempts += 1
 
-    is_solved_response = json_data.get('solved') 
-    
+    is_solved_response = json_data.get('solved')
+
     if exercise.solved is not True and is_solved_response is True:
         exercise.last_good_answer = answer
         exercise.solved = True
@@ -188,9 +209,13 @@ def send_answer(platformCourseExerciseId: int):
 def update_time(platformCourseExerciseId: int):
     user = get_object_or_404(User, (User.username == get_jwt_identity()))
 
-    query = UserCourseExercise.select().join(User).where(User.id == user.id, UserCourseExercise.platform_course_exercise_id == platformCourseExerciseId)
+    query = UserCourseExercise.select().join(User).where(
+        User.id == user.id,
+        UserCourseExercise.platform_course_exercise_id == platformCourseExerciseId)  # NOQA
+
     if not query.exists():
         return {'error': 'Exercise not found'}, HTTPStatus.NOT_FOUND
+
     exercise = query.get()
 
     time = request.json['time']
@@ -213,12 +238,12 @@ def add_note(exerciseId: str):
     user = get_object_or_404(User, (User.username == get_jwt_identity()))
 
     exercise = get_object_or_404(
-        UserCourseExercise, (UserCourseExercise.platform_course_exercise_id == exerciseId), (UserCourseExercise.user == user))
-
-    note = request.json['note']
+        UserCourseExercise, (
+            UserCourseExercise.platform_course_exercise_id == exerciseId), (
+            UserCourseExercise.user == user))
 
     note = ExerciseNote.create(
-        note=note,
+        note=request.json['note'],
         exercise=exercise
     )
 
@@ -230,9 +255,12 @@ def save_code(exerciseId: str):
     user = get_object_or_404(User, (User.username == get_jwt_identity()))
 
     exercise = get_object_or_404(
-        UserCourseExercise, (UserCourseExercise.platform_course_exercise_id == exerciseId), (UserCourseExercise.user == user))
+        UserCourseExercise, (
+            UserCourseExercise.platform_course_exercise_id == exerciseId), (
+            UserCourseExercise.user == user))
 
     code = request.json.get('code')
+
     if code is None:
         return {}, HTTPStatus.BAD_REQUEST
 
@@ -264,62 +292,62 @@ def project(projectId: str):
 
 @jwt_required
 def exercise(id: str):
-    return return_result(fgpe_api.get_endpoint(f'exercises/{id}/?join=statements&join=instructions&join=templates&join=skeletons&join=embeddables&join=solutions&join=libraries&join=tests&join=dynamic_correctors&join=static_correctors')).json()
+    return return_result(fgpe_api.get_endpoint(f'exercises/{id}/?join=statements&join=instructions&join=templates&join=skeletons&join=embeddables&join=solutions&join=libraries&join=tests&join=dynamic_correctors&join=static_correctors')).json()  # NOQA
 
 
 @jwt_required
 def exercises(projectId: str):
-    return return_result(fgpe_api.get_endpoint(f'exercises?limit={EXERCISES_MAX_AMOUNT}', headers={'project': projectId})).json()
+    return return_result(fgpe_api.get_endpoint(f'exercises?limit={EXERCISES_MAX_AMOUNT}', headers={'project': projectId})).json()  # NOQA
 
 
 @jwt_required
 def chalanges(id: str):
-    return return_result(fgpe_api.get_endpoint(f'challenges?filter=gl_id||eq||{id}')).json()
+    return return_result(fgpe_api.get_endpoint(f'challenges?filter=gl_id||eq||{id}')).json()  # NOQA
 
 
 @jwt_required
 def dynamic_correctors(pathname: str):
-    return return_result(fgpe_api.get_endpoint(f'dynamic-correctors/{pathname}/contents')).text
+    return return_result(fgpe_api.get_endpoint(f'dynamic-correctors/{pathname}/contents')).text  # NOQA
 
 
 @jwt_required
 def static_correctors(pathname: str):
-    return return_result(fgpe_api.get_endpoint(f'static-correctors/{pathname}/contents')).text
+    return return_result(fgpe_api.get_endpoint(f'static-correctors/{pathname}/contents')).text  # NOQA
 
 
 @jwt_required
 def statements(pathname):
-    return return_result(fgpe_api.get_endpoint(f'statements/{pathname}/contents')).text
+    return return_result(fgpe_api.get_endpoint(f'statements/{pathname}/contents')).text  # NOQA
 
 
 @jwt_required
 def skeletons(pathname):
-    return return_result(fgpe_api.get_endpoint(f'skeletons/{pathname}/contents')).text
+    return return_result(fgpe_api.get_endpoint(f'skeletons/{pathname}/contents')).text  # NOQA
 
 
 @jwt_required
 def templates(pathname):
-    return return_result(fgpe_api.get_endpoint(f'templates/{pathname}/contents')).text
+    return return_result(fgpe_api.get_endpoint(f'templates/{pathname}/contents')).text  # NOQA
 
 
 @jwt_required
 def libraries(pathname):
-    return return_result(fgpe_api.get_endpoint(f'libraries/{pathname}/contents')).json()
+    return return_result(fgpe_api.get_endpoint(f'libraries/{pathname}/contents')).json()  # NOQA
 
 
 @jwt_required
 def solutions(pathnameId):
-    return return_result(fgpe_api.get_endpoint(f'solutions/{pathnameId}/contents')).text
+    return return_result(fgpe_api.get_endpoint(f'solutions/{pathnameId}/contents')).text  # NOQA
 
 
 @jwt_required
 def embeddables(pathnameId):
-    return return_result(fgpe_api.get_endpoint(f'embeddables/{pathnameId}/contents')).text
+    return return_result(fgpe_api.get_endpoint(f'embeddables/{pathnameId}/contents')).text  # NOQA
 
 
 @jwt_required
 def gamification_layers(projectId):
-    return return_result(fgpe_api.get_endpoint(f'gamification-layers/', headers={'Project': projectId})).json()
+    return return_result(fgpe_api.get_endpoint(f'gamification-layers/', headers={'Project': projectId})).json()  # NOQA
 
 
 def return_result(result):

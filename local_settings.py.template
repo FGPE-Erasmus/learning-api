@@ -13,9 +13,9 @@ API = {
 }
 
 FGPE = {
-    'url': 'http://fgpe.dcc.fc.up.pt:80/api/',
-    'username': 'johny.bravo8468@onet.pl',
-    'password': 'Srnyy6n64u',
+    'url': '',
+    'username': '',
+    'password': '',
     'ENDPOINT_LOGIN': 'auth/login',
     'ENDPOINT_REFRESH_TOKEN': 'auth/refresh'
 }
@@ -40,7 +40,7 @@ SECRETS = {
     'TOKEN_SECURITY_PASSWORD_SALT': 'super-secret'
 }
 
-# OAUTH
+#  OAUTH
 OAUTH = {
     'MICROSOFT': {
         'CLIENT_ID': '',
@@ -57,7 +57,7 @@ OAUTH = {
         'TOKEN_ENDPOINT': '/oauth2/v2.0/token',
         'RESOURCE': 'https://graph.microsoft.com/',
         'API_VERSION': 'v1.0',
-        'SCOPES': ['User.Read'] # Add other scopes/permissions as needed.
+        'SCOPES': ['User.Read'] #  Add other scopes/permissions as needed.
     }
 }
 
