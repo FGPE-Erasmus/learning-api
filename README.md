@@ -11,8 +11,7 @@
 ## Installation
 
 ```bash
-$: pip install virtualenv
-$: virtualenv {env}
+$: virtualenv -p python3 {env}
 $: source {env}/bin/activate
 $: git clone {url}
 $: pip install -r requirements.txt
@@ -31,8 +30,6 @@ To create database or make migration based on changes in tables.py use:
 $: python db_manager.py
 ```
 
-## Start Guide
-
-### Outside Docker containers
+## Outside Docker containers
 
 TODO
