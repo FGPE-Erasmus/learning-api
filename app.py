@@ -1,5 +1,5 @@
 import connexion
-import peewee as pw
+import peewee
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_marshmallow import Marshmallow
@@ -8,7 +8,7 @@ from local_settings import SECRETS
 
 jwt = JWTManager()
 ma = Marshmallow()
-db = pw.PostgresqlDatabase(
+db = peewee.PostgresqlDatabase(
     database=LOCAL_SETTINGS_DATABASE['name'],
     user=LOCAL_SETTINGS_DATABASE['user'],
     password=LOCAL_SETTINGS_DATABASE['password'],

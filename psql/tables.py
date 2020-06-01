@@ -9,7 +9,7 @@ class Badge(peewee.Model):
     class Meta:
         database = db
 
-    name = pw.CharField(
+    name = peewee.CharField(
         unique=True)
 
 
