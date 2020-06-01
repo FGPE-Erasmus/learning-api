@@ -166,6 +166,26 @@ paths:
         404:
           description: "Not found"
 
+  /users/:
+    get:
+      operationId: "rest_api.views.get_user_all"
+      description: "Get user"
+      responses:
+        200:
+          description: "OK"
+        404:
+          description: "Not found"
+
+  /userdetails/:
+    post:
+      operationId: "rest_api.views.get_user_details"
+      description: "Get user details"
+      responses:
+        200:
+          description: "OK"
+        404:
+          description: "Not found"
+
   /user/:
     get:
       operationId: "rest_api.views.get_user"
@@ -189,6 +209,8 @@ paths:
               type: string
             uiColor:
               type: string
+            logginTime:
+              type: boolean
       responses:
         200:
           description: "Ok"

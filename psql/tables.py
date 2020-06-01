@@ -32,6 +32,9 @@ class User(pw.Model):
     points = pw.IntegerField(default=0)
     badges = pw.ManyToManyField(Badge, backref='badges')
     time_spent_seconds = pw.IntegerField(default=0)
+    number_of_attempts = pw.IntegerField(default=0)
+    solved_amount = pw.IntegerField(default=0)
+    last_login = pw.DateTimeField(null=True)
 
     selected_project = pw.CharField(null=True)
     selected_module = pw.CharField(null=True)
@@ -80,6 +83,10 @@ class UserCourseExercise(pw.Model):
     number_of_attempts = pw.IntegerField(default=0)
     time_spent_seconds = pw.IntegerField(default=0)
     user = pw.ForeignKeyField(User, null=False)
+    project_name = pw.TextField(null=True)
+    module_name = pw.TextField(null=True)
+    exercise_name = pw.TextField(null=True)
+    exercise_description = pw.TextField(null=True)
 
     class Meta:
         database = db

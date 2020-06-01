@@ -66,7 +66,12 @@ class UserSchema(ma.Schema):
             'selected_project',
             'time_spent_seconds',
             'username',
-            'ui_color'
+            'ui_color',
+            'is_admin',
+            'number_of_attempts',
+            'solved_amount',
+            'last_login',
+            'microsoft_mail',
         ]
 
     badges = ma.Nested(BadgeSchema(many=True))
@@ -84,7 +89,11 @@ class UserCourseExerciseSchema(ma.Schema):
             'number_of_attempts',
             'time_spent_seconds',
             'notes',
-            'saved_code'
+            'saved_code',
+            'project_name',
+            'module_name',
+            'exercise_name',
+            'exercise_description',
         ]
 
     notes = ma.Nested(ExerciseNoteSchema(many=True))

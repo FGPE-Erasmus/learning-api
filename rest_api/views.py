@@ -3,6 +3,8 @@ from flask import abort, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from http import HTTPStatus
 from playhouse.flask_utils import get_object_or_404
+from datetime import datetime, timedelta
+import datetime
 
 from psql.tables import (
     User,
@@ -21,6 +23,38 @@ from local_settings import EXERCISES_MAX_AMOUNT
 
 fgpe_api = FGPEApi()
 
+@jwt_required
+def get_user_all():
+    role = User.get(User.username == get_jwt_identity()).is_admin
+    
+    if role is True:
+        users = User.select()
+        user_schema = UserSchema(many=True)
+        return user_schema.jsonify(users), HTTPStatus.OK
+    else:
+        return {"msg": "Not allowed"}, 403
+
+
+@jwt_required
+def get_user_details():
+    role = User.get(User.username == get_jwt_identity()).is_admin
+    
+    if role is True:
+        json_data = request.get_json()
+        user_name = json_data.get('userName')
+        microsoft_mail = json_data.get('mirosoftMail')
+
+        if microsoft_mail is None:  
+            user = get_object_or_404(User, (User.username == user_name))
+        else:
+            user = get_object_or_404(User, (User.microsoft_mail == microsoft_mail))     
+
+        exercieses = UserCourseExercise.select().join(User).where((User.id == user.id) & (UserCourseExercise.last_answer.is_null(False))).select()
+        exercieses_schema = UserCourseExerciseSchema(many=True)  
+        return exercieses_schema.jsonify(exercieses), HTTPStatus.OK
+    else:
+        return {"msg": "Not allowed"}, 403
+
 
 @jwt_required
 def get_user():
@@ -32,11 +66,13 @@ def get_user():
 @jwt_required
 def update_user():
     user = get_object_or_404(User, (User.username == get_jwt_identity()))
-    
     interface_lang = request.json.get('interfaceLang', None)
     ui_color = request.json.get('uiColor', None)
     first_name = request.json.get('first_name', None)
     last_name = request.json.get('last_name', None)
+    number_of_attempts = request.json.get('number_of_attempts', None)
+    solved_amount = request.json.get('solved_amount', None)
+    update_login = request.json.get('logginTime', None)
 
     if interface_lang is not None:
         user.interface_lang = interface_lang
@@ -46,6 +82,12 @@ def update_user():
         user.first_name = first_name
     if last_name is not None:
         user.last_name = last_name
+    if number_of_attempts is not None:
+        user.number_of_attempts += 1
+    if solved_amount is not None and solved_amount == True:
+        user.solved_amount += 1
+    if update_login is not None:
+        user.last_login = datetime.datetime.now()
 
     user.save()
 
@@ -119,10 +161,22 @@ def send_answer(platformCourseExerciseId: int):
     json_data = request.get_json()
     answer = json_data.get('answer')
     exercise.last_answer = answer
+    exercise.exercise_name = json_data.get('exerciseName')
+    exercise.exercise_description = json_data.get('exerciseDescription')
+    exercise.module_name = json_data.get('moduleName')
+    exercise.project_name = json_data.get('projectName')
     exercise.number_of_attempts += 1
-    exercise.solved = json_data.get('solved')
-    if exercise.solved:
+
+    is_solved_response = json_data.get('solved') 
+    
+    if exercise.solved is not True and is_solved_response is True:
         exercise.last_good_answer = answer
+        exercise.solved = True
+    elif exercise.solved is not True and is_solved_response is False:
+        exercise.solved = False
+    elif exercise.solved is True and is_solved_response is True:
+        exercise.last_good_answer = answer
+
     exercise.save()
 
     exercise_schema = UserCourseExerciseSchema()
@@ -147,6 +201,9 @@ def update_time(platformCourseExerciseId: int):
     exercise.save()
 
     exercise_schema = UserCourseExerciseSchema()
+
+    user.time_spent_seconds += time
+    user.save()
 
     return exercise_schema.jsonify(exercise), HTTPStatus.OK
 
