@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+**/__pycache__
 *.py[cod]
 *$py.class
 
@@ -44,4 +45,3 @@ bin
 *.DS_*
 
 local_settings.py
-
